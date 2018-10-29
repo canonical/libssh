@@ -1,6 +1,13 @@
 ChangeLog
 ==========
 
+version 0.7.7 (released 2018-10-29)
+  * Fixed issues with MSVC
+  * Fixed keyboard-interactive auth in server mode
+    (regression from CVE-2018-10933)
+  * Fixed gssapi auth in server mode (regression from CVE-2018-10933)
+  * Fixed a memory leak with OpenSSL
+
 version 0.7.6 (released 2018-10-16)
   * Fixed CVE-2018-10933
   * Added support for OpenSSL 1.1
