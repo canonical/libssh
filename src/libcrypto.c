@@ -43,6 +43,7 @@
 #include <openssl/hmac.h>
 #include <openssl/opensslv.h>
 #include <openssl/rand.h>
+
 #include "libcrypto-compat.h"
 
 #ifdef HAVE_OPENSSL_AES_H
@@ -52,6 +53,10 @@
 #ifdef HAVE_OPENSSL_DES_H
 #define HAS_DES
 #include <openssl/des.h>
+#endif
+
+#ifdef HAVE_OPENSSL_CRYPTO_CTR128_ENCRYPT
+#include <openssl/modes.h>
 #endif
 
 #if (OPENSSL_VERSION_NUMBER<0x00907000L)
