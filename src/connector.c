@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 
 #ifndef CHUNKSIZE
-#define CHUNKSIZE 4096
+#define CHUNKSIZE 65536
 #endif
 
 #ifdef _WIN32
