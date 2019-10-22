@@ -50,6 +50,12 @@ struct ssh_timestamp {
   long useconds;
 };
 
+enum ssh_quote_state_e {
+    NO_QUOTE,
+    SINGLE_QUOTE,
+    DOUBLE_QUOTE
+};
+
 struct ssh_list *ssh_list_new(void);
 void ssh_list_free(struct ssh_list *list);
 struct ssh_iterator *ssh_list_get_iterator(const struct ssh_list *list);
@@ -80,5 +86,7 @@ int ssh_timeout_elapsed(struct ssh_timestamp *ts, int timeout);
 int ssh_timeout_update(struct ssh_timestamp *ts, int timeout);
 
 int ssh_match_group(const char *group, const char *object);
+
+int ssh_quote_file_name(const char *file_name, char *buf, size_t buf_len);
 
 #endif /* MISC_H_ */
