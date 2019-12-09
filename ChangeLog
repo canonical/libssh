@@ -1,6 +1,9 @@
 ChangeLog
 ==========
 
+version 0.8.8 (released 2019-12-10)
+  * Fixed CVE-2019-14889 - SCP: Unsanitized location leads to command execution
+
 version 0.8.7 (released 2019-02-25)
   * Fixed handling extension flags in the server implementation
   * Fixed exporting ed25519 private keys
