@@ -328,7 +328,7 @@ static void ssh_connector_fd_out_cb(ssh_connector connector){
 
     if(connector->in_available){
         if (connector->in_channel != NULL){
-            r = ssh_channel_read_nonblocking(connector->in_channel, buffer, CHUNKSIZE, 0);
+            r = ssh_channel_read_nonblocking(connector->in_channel, buffer, CHUNKSIZE, connector->in_flags & SSH_CONNECTOR_STDERR);
             if(r == SSH_ERROR){
                 ssh_connector_except_channel(connector, connector->in_channel);
                 return;
@@ -602,7 +602,7 @@ int ssh_connector_set_event(ssh_connector connector, ssh_event event)
                 ssh_channel_get_session(connector->in_channel));
         if (rc != SSH_OK)
             goto error;
-        if (ssh_channel_poll_timeout(connector->in_channel, 0, 0) > 0){
+        if (ssh_channel_poll_timeout(connector->in_channel, 0, connector->in_flags & SSH_CONNECTOR_STDERR) > 0){
             connector->in_available = 1;
         }
     }
