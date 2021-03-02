@@ -38,7 +38,7 @@
 #include "libssh/buffer.h"
 #include "libssh/misc.h"
 
-#define SFTP_HANDLES 256
+#define SFTP_HANDLES_CHUNK_SZ 256
 
 sftp_client_message sftp_get_client_message(sftp_session sftp) {
   ssh_session session = sftp->session;
@@ -496,21 +496,22 @@ ssh_string sftp_handle_alloc(sftp_session sftp, void *info) {
   uint32_t val;
   uint32_t i;
 
-  if (sftp->handles == NULL) {
-    sftp->handles = calloc(SFTP_HANDLES, sizeof(void *));
-    if (sftp->handles == NULL) {
-      return NULL;
-    }
-  }
-
-  for (i = 0; i < SFTP_HANDLES; i++) {
-    if (sftp->handles[i] == NULL) {
+  for (i = 0; i < sftp->total_allocated_handles; i++) {
+    if (sftp->handles == NULL || sftp->handles[i] == NULL) {
       break;
     }
   }
 
-  if (i == SFTP_HANDLES) {
-    return NULL; /* no handle available */
+  if (i == sftp->total_allocated_handles) {
+    uint32_t old_size = sftp->total_allocated_handles;
+    sftp->total_allocated_handles += SFTP_HANDLES_CHUNK_SZ;
+
+    void **tmp = realloc(sftp->handles, sftp->total_allocated_handles * sizeof(void *));
+    if (tmp == NULL)
+        return NULL; /* no handle available */
+
+    sftp->handles = tmp;
+    memset(sftp->handles + old_size, '\0', SFTP_HANDLES_CHUNK_SZ * sizeof(void *));
   }
 
   val = i;
@@ -538,7 +539,7 @@ void *sftp_handle(sftp_session sftp, ssh_string handle){
 
   memcpy(&val, ssh_string_data(handle), sizeof(uint32_t));
 
-  if (val > SFTP_HANDLES) {
+  if (val > sftp->total_allocated_handles) {
     return NULL;
   }
 
@@ -548,7 +549,7 @@ void *sftp_handle(sftp_session sftp, ssh_string handle){
 void sftp_handle_remove(sftp_session sftp, void *handle) {
   int i;
 
-  for (i = 0; i < SFTP_HANDLES; i++) {
+  for (i = 0; i < sftp->total_allocated_handles; i++) {
     if (sftp->handles[i] == handle) {
       sftp->handles[i] = NULL;
       break;
